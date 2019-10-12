@@ -4,9 +4,9 @@ import org.junit.Test
 class BlockchainTest {
 
     @Test fun `Genesis block is created correctly`() {
-        val block = Block("", -1)
+        val block = Block(ByteArray(32), -1)
 
-        assert(block.prevHash == "")
+        // previous hash is whatever we put in. sequence should be 0
         assert(block.seq == 0)
         // one transaction with only genesis as to and from and all currency
         assert(block.transactions.size == 1)

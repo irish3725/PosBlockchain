@@ -1,3 +1,4 @@
+import java.security.MessageDigest
 
 /**
  * Block is a single component in the blockchain. Block structure:
@@ -12,7 +13,7 @@
  * @param prevSeq: sequence number of the previous block. if genesis block,
  * use -1.
  */
-class Block(val prevHash: String, val prevSeq: Int) {
+class Block(val prevHash: ByteArray, val prevSeq: Int) {
     var seq: Int = prevSeq + 1
     var transactions: ArrayList<Transaction> = arrayListOf<Transaction>()
     var signatures: ArrayList<Signature> = arrayListOf<Signature>()
@@ -22,6 +23,7 @@ class Block(val prevHash: String, val prevSeq: Int) {
      */
     init {
         if(prevSeq == -1) {
+            // generate initial hash
             transactions.add(Transaction("genesis", "genesis", 100000000000))
         }
     }
@@ -52,5 +54,17 @@ class Block(val prevHash: String, val prevSeq: Int) {
             print("\t")
             s.printSingature()
         }
+    }
+
+    /**
+     * Returns a sha256 hash of this block as ByteArray!
+     */
+    fun getHash(): ByteArray {
+        // get byte array of this block
+        val byte = this.toString().toByteArray()
+        val md = MessageDigest.getInstance("SHA-256")
+        val digest = md.digest(byte)
+
+        return digest
     }
 }

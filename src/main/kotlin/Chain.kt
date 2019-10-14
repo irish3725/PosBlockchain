@@ -50,16 +50,16 @@ class Chain {
     fun commitBlock(){
 
         // keep track of broken block
-        val brokenBlock = validateChain(commitIndex + 1)
+        val valid = validateChain(commitIndex + 1)
 
         // validate chain up to the block after commit. set new commitIndex if no validation errors
-        if (brokenBlock == -1) {
+        if (valid) {
             // commit next block
             commitIndex++
             // write lastHash to next block to be committed
             blocks[commitIndex+1].prevHash = blocks[commitIndex].getHash()
         } else {
-            println("Commit failed: validation failed on block: $brokenBlock.")
+            println("Commit failed: validation failed.")
         }
 
 
@@ -68,25 +68,33 @@ class Chain {
     /**
      * Validate each block by counting currency and
      * comparing hashes to previous hashes until index
+     * and then making sure number of Schrutebucks total
+     * matches the number at genesis
      *
      * TODO: validateChain()
      */
-    fun validateChain(blockIndex: Int): Int {
+    fun validateChain(blockIndex: Int): Boolean {
 
         // only validate up to the lower of blockIndex or block after commit
         val validateEnd = min(blockIndex, commitIndex + 1)
 
-        // for now, just check previous hashes
         // start at second block, and look backwards to check prevHash on each
         for (i in 1..validateEnd) {
             // if this block's prevHash does not match the previous block's hash, return index of broken block
             if (!blocks[i].prevHash.contentEquals(blocks[i-1].getHash())){
-               return i + 1
+               return false
             }
         }
 
-        // return -1 if no errors
-        return -1
+        val balances = getBalances()
+
+        // check balances match
+        if (balances.isEmpty() || !balances.reconcile()) {
+            return false
+        }
+
+        // return true if no errors were found
+        return true
     }
 
     /**
@@ -170,7 +178,7 @@ class Chain {
         for (b: Block in blocks){
 
             for (t: Transaction in b.transactions) {
-                balances.changeBalance(t)
+                if(!balances.changeBalance(t)) return Balances()
             }
         }
 

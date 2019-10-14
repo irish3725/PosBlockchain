@@ -1,9 +1,16 @@
-import com.sun.xml.internal.fastinfoset.util.StringArray
-
 private class Balance(var name: String, var balance: Long) {}
+
 class Balances() {
 
     private var balanceList = arrayListOf<Balance>()
+    var genesisTotal = 0L
+
+    /**
+     * Returns true when balanceList.size == 0. Otherwise returns false
+     *
+     * @return: true when the object contains no Balance objects
+     */
+    fun isEmpty(): Boolean { return balanceList.size == 0 }
 
     /**
      * Adds a new balance to list of balances
@@ -103,6 +110,7 @@ class Balances() {
         val amount = transaction.amount
 
         if(from == "genesis") {
+            genesisTotal = amount
             addCustomer(to, amount)
 
         // return false if from doesn't exist or has negative balance
@@ -148,4 +156,24 @@ class Balances() {
         return customers
     }
 
+    /**
+     * Returns true when count of Schrutebucks
+     * matches the total in the genesis block.
+     *
+     * @return: true when balance at this block matches total in genesis.
+     */
+    fun reconcile(): Boolean {
+
+        var total = 0L
+
+        // add up everyone's balance
+        for (b: Balance in balanceList) {
+            total += b.balance
+        }
+
+        // return false if total balance for this block does not match total at genesis
+        if (total != genesisTotal) return false
+
+        return true
+    }
 }

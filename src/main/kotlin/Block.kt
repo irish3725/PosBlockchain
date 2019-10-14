@@ -13,7 +13,7 @@ import java.security.MessageDigest
  * @param prevSeq: sequence number of the previous block. if genesis block,
  * use -1.
  */
-class Block(val prevHash: ByteArray, val prevSeq: Int) {
+class Block(var prevHash: ByteArray, val prevSeq: Int) {
     var seq: Int = prevSeq + 1
     var transactions: ArrayList<Transaction> = arrayListOf<Transaction>()
     var signatures: ArrayList<Signature> = arrayListOf<Signature>()
@@ -43,7 +43,7 @@ class Block(val prevHash: ByteArray, val prevSeq: Int) {
      */
     fun printBlock() {
         println("Sequence: $seq\n" +
-                "Previous Hash: $prevHash\n" +
+                "Previous Hash: ${getHashHex(prevHash)}\n" +
                 "Transactions:")
         for (t: Transaction in transactions) {
             print("\t")
@@ -54,6 +54,7 @@ class Block(val prevHash: ByteArray, val prevSeq: Int) {
             print("\t")
             s.printSingature()
         }
+        println("Current Hash:  ${getHashHex(getHash())}")
     }
 
     /**
@@ -66,5 +67,19 @@ class Block(val prevHash: ByteArray, val prevSeq: Int) {
         val digest = md.digest(byte)
 
         return digest
+    }
+
+    /**
+     * Prints hash as string version of hex for prettier printing
+     */
+    fun getHashHex(hash: ByteArray): String {
+
+        val hex: StringBuilder = StringBuilder()
+
+        // iterate over each byte and append string rep to our hash string
+        for (b: Byte in hash) {
+            hex.append(String.format("%2X", b).replace(" ", "0"))
+        }
+        return hex.toString()
     }
 }

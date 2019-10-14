@@ -1,9 +1,26 @@
 
 fun main() {
 
+    // generate chain
     val chain = Chain()
 
+    // print initial chain
     chain.printChain(0, chain.lastIndex)
+
+    // add new block. print whole chain
+    chain.beginCommit()
+    chain.printChain(0, chain.lastIndex)
+
+    // validate and commit latest block
+    chain.commitBlock()
+    chain.printChain(0, chain.lastIndex)
+
+    // add new block. break previous block
+    chain.beginCommit()
+    chain.getBlock(chain.lastIndex - 1).prevHash = ByteArray(32)
+    chain.commitBlock()
+    chain.printChain(0, chain.lastIndex)
+
 }
 
 fun oldTest() {

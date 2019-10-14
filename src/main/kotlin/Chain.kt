@@ -1,3 +1,5 @@
+import kotlin.math.min
+
 class Chain {
     // an arraylist of blocks sounds fine for now
     var blocks: ArrayList<Block> = arrayListOf<Block>()
@@ -24,6 +26,8 @@ class Chain {
         // find the last block, append new block to end.
         // Can't set prevHash until commit of prevBlock. Use blank ByteArray until commit
         blocks.add(Block(ByteArray(32), blocks.last().seq))
+        // increment end index
+        lastIndex++
     }
 
     /**
@@ -51,10 +55,20 @@ class Chain {
      */
     fun commitBlock(){
 
+        // keep track of broken block
+        val brokenBlock = validateChain(commitIndex + 1)
+
         // validate chain up to the block after commit. set new commitIndex if no validation errors
-        if (validateChain(commitIndex + 1) == -1) {
+        if (brokenBlock == -1) {
+            // commit next block
             commitIndex++
+            // write lastHash to next block to be committed
+            blocks[commitIndex+1].prevHash = blocks[commitIndex].getHash()
+        } else {
+            println("Commit failed: validation failed on block: $brokenBlock.")
         }
+
+
     }
 
     /**
@@ -65,9 +79,12 @@ class Chain {
      */
     fun validateChain(blockIndex: Int): Int {
 
+        // only validate up to the lower of blockIndex or block after commit
+        val validateEnd = min(blockIndex, commitIndex + 1)
+
         // for now, just check previous hashes
         // start at second block, and look backwards to check prevHash on each
-        for (i in 1..blockIndex) {
+        for (i in 1..validateEnd) {
             // if this block's prevHash does not match the previous block's hash, return index of broken block
             if (!blocks[i].prevHash.contentEquals(blocks[i-1].getHash())){
                return i + 1
@@ -112,6 +129,9 @@ class Chain {
             return
         }
 
+        println("\nChain beginning at block: $startIndex and ending at block: $endIndex")
+        println("--------------------------------------------------")
+
         // print each block from start to end
         for (i in startIndex..endIndex) {
             blocks[i].printBlock()
@@ -119,5 +139,14 @@ class Chain {
                 println("^^^^^^^^^^^^^^^Commit^^^^^^^^^^^^^^^")
             }
         }
+
+        println("--------------------------------------------------")
+    }
+
+    /**
+     * return block for editing. This will be used only for debugging
+     */
+    fun getBlock(blockIndex: Int): Block {
+        return blocks[blockIndex]
     }
 }

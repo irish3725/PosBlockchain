@@ -7,6 +7,7 @@ class BlockchainTest {
         val block = Block(ByteArray(32), -1)
 
         // previous hash is whatever we put in. sequence should be 0
+        assert(block.prevHash.contentEquals(ByteArray(32)))
         assert(block.seq == 0)
         // one transaction with only genesis as to and from and all currency
         assert(block.transactions.size == 1)

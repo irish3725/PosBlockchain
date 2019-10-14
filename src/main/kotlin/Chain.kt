@@ -18,27 +18,21 @@ class Chain {
         lastIndex = 1
     }
 
+    // --- Begin public Functions ---
     /**
-     * Adds a new empty block to the end of the chain
-     */
-    private fun appendBlock(){
-
-        // find the last block, append new block to end.
-        // Can't set prevHash until commit of prevBlock. Use blank ByteArray until commit
-        blocks.add(Block(ByteArray(32), blocks.last().seq))
-        // increment end index
-        lastIndex++
-    }
-
-    /**
-     * After block has sufficient signatures,
-     * ask for signatures so block can be committed,
+     * Ask for signatures so block can be committed,
      * create new block for new transactions to be
      * written to.
      *
      * TODO: beginCommit()
      */
     fun beginCommit() {
+
+        // only allow beginCommit() when there is exactly one uncommitted block
+        if (lastIndex != commitIndex + 1) {
+            println("Can only begin commit when exactly one block is uncommitted.")
+            return
+        }
 
         // for now, just add a new block
         appendBlock()
@@ -149,4 +143,52 @@ class Chain {
     fun getBlock(blockIndex: Int): Block {
         return blocks[blockIndex]
     }
+
+    /**
+     * Add transaction to last block in chain
+     */
+    fun addTransaction(from: String, to: String, amount: Long, note: String) {
+        blocks[lastIndex].transactions.add(Transaction(from, to, amount, note))
+    }
+
+    /**
+     * returns balances object that has updated balances for every customer that exists on block
+     */
+    fun getBalances(): Balances {
+
+        // create empty Balances object
+        val balances = Balances()
+
+        // iterate over each block
+        for (b: Block in blocks){
+
+            for (t: Transaction in b.transactions) {
+                balances.changeBalance(t)
+            }
+        }
+
+        return balances
+    }
+    // --- End Public Functions ---
+
+    // --- Begin Private Functions ---
+    /**
+     * Adds a new empty block to the end of the chain
+     */
+    private fun appendBlock(){
+
+        // find the last block, append new block to end.
+        // Can't set prevHash until commit of prevBlock. Use blank ByteArray until commit
+        blocks.add(Block(ByteArray(32), blocks.last().seq))
+        // increment end index
+        lastIndex++
+    }
+
+    /**
+     * Removes final block. This should only be done by the chain
+     */
+    private fun removeLast() {
+        blocks.remove(blocks.last())
+    }
+    // --- End Private Functions ---
 }

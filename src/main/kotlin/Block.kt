@@ -24,7 +24,8 @@ class Block(var prevHash: ByteArray, val prevSeq: Int) {
     init {
         if(prevSeq == -1) {
             // generate initial hash
-            transactions.add(Transaction("genesis", "genesis", 100000000000))
+            transactions.add(Transaction("genesis", "Dwight", 100000000000, "Genesis block. " +
+                    "Dwight is the Schrutebuck administrator."))
         }
     }
 

@@ -1,3 +1,5 @@
+import com.sun.xml.internal.fastinfoset.util.StringArray
+
 private class Balance(var name: String, var balance: Long) {}
 class Balances() {
 
@@ -59,7 +61,8 @@ class Balances() {
     }
 
     /**
-     * Adds parameter "amount" to balance of customer with name "name"
+     * Adds parameter "amount" to balance of customer with name "name".
+     * If customer's balance drops to 0, remove customer.
      *
      * @param name: name of person whos balance should be changed.
      * @param amount: amount to be added to person's balance. use negative amount to subtract.
@@ -69,11 +72,18 @@ class Balances() {
         val customerIndex = getCustomerIndex(name)
         val newBalance = balanceList[customerIndex].balance + amount
 
+        // if negative new balance, print error and return false
         if (newBalance < 0) {
             println("$name cannot have a negative balance. $name's current balance: ${getBalance(name)}")
             return false
+
+        // if new balance is 0, remove them from list
+        } else if (newBalance == 0L) {
+            balanceList.removeAt(customerIndex)
+
         } else {
             balanceList[customerIndex].balance = newBalance
+
         }
 
         return true
@@ -120,4 +130,22 @@ class Balances() {
             println("${b.name}: ${String.format("%,d", b.balance)} Shrutebucks")
         }
     }
+
+    /**
+     * returns list of customers that appear on the chain
+     *
+     * @return: string array of customer names that appear on chain
+     */
+    fun getCustomers(): Array<String> {
+        // create array of empty strings
+        val customers = Array(balanceList.size) {""}
+
+        //for (b: Balance in balanceList) {
+        for (i in 0 until balanceList.size) {
+            customers[i] = balanceList[i].name
+        }
+
+        return customers
+    }
+
 }

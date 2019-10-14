@@ -55,7 +55,7 @@ class Block(var prevHash: ByteArray, val prevSeq: Int) {
             print("\t")
             s.printSingature()
         }
-        println("Current Hash:  ${getHashHex(getHash())}")
+        println("Current Hash:  ${getHashHex(getHash())}\n------------------------------")
     }
 
     /**

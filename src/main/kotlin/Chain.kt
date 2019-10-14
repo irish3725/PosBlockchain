@@ -147,6 +147,13 @@ class Chain {
     /**
      * Add transaction to last block in chain
      */
+    fun addTransaction(transaction: Transaction) {
+        blocks[lastIndex].transactions.add(transaction)
+    }
+
+    /**
+     * Add transaction to last block in chain
+     */
     fun addTransaction(from: String, to: String, amount: Long, note: String) {
         blocks[lastIndex].transactions.add(Transaction(from, to, amount, note))
     }

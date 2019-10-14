@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="BlockchainTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2019-10-12T23:05:48" hostname="alex-pc" time="0.002">
+<testsuite name="BlockchainTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2019-10-14T18:25:17" hostname="alex-pc" time="0.003">
   <properties/>
-  <testcase name="Genesis block is created correctly" classname="BlockchainTest" time="0.002"/>
+  <testcase name="Genesis block is created correctly" classname="BlockchainTest" time="0.003"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

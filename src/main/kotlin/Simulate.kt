@@ -1,6 +1,12 @@
 
 fun main() {
 
+    val chain = Chain()
+
+    chain.printChain(0, chain.lastIndex)
+}
+
+fun oldTest() {
     // create chain as arraylist of blocks for now and add genesis block
     val chain: ArrayList<Block> = arrayListOf<Block>()
     chain.add(Block(ByteArray(32), -1))

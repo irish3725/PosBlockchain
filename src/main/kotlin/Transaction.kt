@@ -11,7 +11,7 @@ class Transaction (val from: String, val to: String, val amount: Long, val note:
      * Prints transaction in format "From: <giving signature>; To <receiving signature>; Amount: <amount>"
      */
     fun printTransaction() {
-        println("From: $from; To: $to; Amount: ${String.format("%,d", amount)}\n\t\tNote: $note")
+        println("$from --> $to: ${String.format("%,d", amount)} | Note: $note")
     }
 
     /**

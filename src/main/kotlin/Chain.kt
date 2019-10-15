@@ -5,6 +5,7 @@ class Chain {
     var blocks: ArrayList<Block> = arrayListOf<Block>()
     var commitIndex: Int = -1
     var lastIndex: Int = -1
+
     /**
      * Generate genesis block.
      */
@@ -48,7 +49,7 @@ class Chain {
      *
      *  TODO: commitBLock()
      */
-    fun commitBlock(){
+    fun commitBlock() {
 
         // keep track of broken block
         val valid = validateChain(commitIndex + 1)
@@ -58,7 +59,7 @@ class Chain {
             // commit next block
             commitIndex++
             // write lastHash to next block to be committed
-            blocks[commitIndex+1].prevHash = blocks[commitIndex].getHash()
+            blocks[commitIndex + 1].prevHash = blocks[commitIndex].getHash()
         } else {
             println("Commit failed: validation failed.")
         }
@@ -82,8 +83,8 @@ class Chain {
         // start at second block, and look backwards to check prevHash on each
         for (i in 1..validateEnd) {
             // if this block's prevHash does not match the previous block's hash, return index of broken block
-            if (!blocks[i].prevHash.contentEquals(blocks[i-1].getHash())){
-               return false
+            if (!blocks[i].prevHash.contentEquals(blocks[i - 1].getHash())) {
+                return false
             }
         }
 
@@ -103,7 +104,7 @@ class Chain {
      *
      * TODO: addTransaction()
      */
-    fun addTransaction(){
+    fun addTransaction() {
 
     }
 
@@ -112,7 +113,7 @@ class Chain {
      *
      * TODO: signBlock()
      */
-    fun signBlock(){
+    fun signBlock() {
 
     }
 
@@ -126,9 +127,10 @@ class Chain {
 
         // don't allow incorrect indices
         if (startIndex >= blocks.size || startIndex < 0 ||
-                endIndex >= blocks.size || endIndex < 0 ||
-                startIndex > endIndex) {
-            println("Chain indices out of bounds. Last index of this chain is ${blocks.size -1}")
+            endIndex >= blocks.size || endIndex < 0 ||
+            startIndex > endIndex
+        ) {
+            println("Chain indices out of bounds. Last index of this chain is ${blocks.size - 1}")
             return
         }
 
@@ -160,7 +162,7 @@ class Chain {
         blocks[lastIndex].addTransaction(transaction)
 
         // if we have committed the last black and we reach at least 15 transactions, begin committing this block
-        if ( commitIndex == lastIndex - 1 && blocks[lastIndex].transactions.size >= 15) {
+        if (commitIndex == lastIndex - 1 && blocks[lastIndex].transactions.size >= 15) {
             beginCommit()
         }
     }
@@ -172,7 +174,7 @@ class Chain {
         blocks[lastIndex].addTransaction(Transaction(from, to, amount, note))
 
         // if we have committed the last black and we reach at least 15 transactions, begin committing this block
-        if ( commitIndex == lastIndex - 1 && blocks[lastIndex].transactions.size >= 15) {
+        if (commitIndex == lastIndex - 1 && blocks[lastIndex].transactions.size >= 15) {
             beginCommit()
         }
     }
@@ -186,13 +188,18 @@ class Chain {
         val balances = Balances()
 
         // iterate over each block
-        for (b: Block in blocks){
+        for (b: Block in blocks) {
 
+            // change balance based on new transaction
             for (t: Transaction in b.transactions) {
-                if(!balances.changeBalance(t)) return Balances()
+                balances.changeBalance(t)
             }
         }
 
+        // after iterating over all blocks reconcile.
+        if(!balances.reconcile()) return Balances()
+
+        // if balances reconcile, return balances
         return balances
     }
     // --- End Public Functions ---
@@ -201,7 +208,7 @@ class Chain {
     /**
      * Adds a new empty block to the end of the chain
      */
-    private fun appendBlock(){
+    private fun appendBlock() {
 
         // find the last block, append new block to end.
         // Can't set prevHash until commit of prevBlock. Use blank ByteArray until commit

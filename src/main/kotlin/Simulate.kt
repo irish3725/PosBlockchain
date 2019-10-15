@@ -10,6 +10,7 @@ fun main() {
     // start generating transactions to place on block
     val transactionsToGenerate = Random.nextInt(17, 20)
     for (i in 0 until transactionsToGenerate) {
+        chain.blocks[chain.lastIndex].printBlock()
         chain.addTransaction(generateTransaction(chain, customers))
     }
 
@@ -23,17 +24,27 @@ fun main() {
 
 fun generateTransaction(chain: Chain, customers: Array<String>): Transaction {
 
+    // get list of balances on current block
     val balances  = chain.getBalances()
+    // get list of customers with balances
     val customersWithBalance = balances.getCustomers()
-    val fromIndex = Random.nextInt(customersWithBalance.size)
+    // get customer that will be giving
+    val fromIndex = Random.nextInt(0, customersWithBalance.size)
     val from = customersWithBalance[fromIndex]
+    // get amount customer will be giving
+    println("$from: ${balances.getBalance(from)}")
     val amount = Random.nextLong(minOf(balances.getBalance(from), 5000))
-    var to = from
 
-    while (to == from) {
-        to = customers[Random.nextInt(customers.size)]
+    // get customer that will be receiving
+    var to = from
+//    while (to == from || to == "Dwight") { // I don't want to give any back to the admin
+    while (to == from) { // I don't want to give any back to the admin
+        to = customers[Random.nextInt(0, customers.size)]
     }
 
-    return Transaction(from, to, amount, "$from gave $to ${String.format("%,d", amount)} Shrutebucks.")
+    val transaction = Transaction(from, to, amount, "$from gave $to ${String.format("%,d", amount)} Shrutebucks.")
+    chain.getBalances().printBalances()
+    transaction.printTransaction()
+    return transaction
 
 }

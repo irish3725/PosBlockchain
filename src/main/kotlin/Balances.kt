@@ -19,14 +19,9 @@ class Balances() {
      * @param balance: new customer's balance. (cannot be negative)
      * @return: true when customer has been added. Otherwise, false
      */
-    fun addCustomer(name: String, balance: Long): Boolean {
-        if(balance < 0) {
-            println("$name cannot have a negative balance")
-            return false
-        }
+    fun addCustomer(name: String, balance: Long) {
 
         balanceList.add(Balance(name, balance))
-        return true
     }
 
     /**
@@ -75,25 +70,13 @@ class Balances() {
      * @param amount: amount to be added to person's balance. use negative amount to subtract.
      * @return: true when balance has been changed. Otherwise, return false.
      */
-    fun changeBalance(name: String, amount: Long): Boolean {
+    fun changeBalance(name: String, amount: Long) {
+        // get customer's new balance
         val customerIndex = getCustomerIndex(name)
         val newBalance = balanceList[customerIndex].balance + amount
 
-        // if negative new balance, print error and return false
-        if (newBalance < 0) {
-            println("$name cannot have a negative balance. $name's current balance: ${getBalance(name)}")
-            return false
-
-        // if new balance is 0, remove them from list
-        } else if (newBalance == 0L) {
-            balanceList.removeAt(customerIndex)
-
-        } else {
-            balanceList[customerIndex].balance = newBalance
-
-        }
-
-        return true
+        // change balance to new balance
+        balanceList[customerIndex].balance = newBalance
     }
 
     /**
@@ -102,31 +85,41 @@ class Balances() {
      *
      * @param transaction: Transaction object that will change the balance of two customers
      */
-    fun changeBalance(transaction: Transaction): Boolean {
+    fun changeBalance(transaction: Transaction) {
 
         // pull out all values from transaction for readability
         val from = transaction.from
         val to = transaction.to
         val amount = transaction.amount
 
+        // if genesis, add to admin, and then return
         if(from == "genesis") {
             genesisTotal = amount
             addCustomer(to, amount)
+            return
 
-        // return false if from doesn't exist or has negative balance
-        } else if(getCustomerIndex(from) == -1 || getBalance(from) < amount) {
-            println("$from cannot give more than he has. $from's balance: ${getBalance(from)}")
-            return false
+            // if not genesis, add/change the to and from balances
+        } else {
+            // add to to list if hasn't been seen yet. change if they already exist
+            if(getCustomerIndex(to) == -1) {
+                // add new customer with balance of "amount"
+                addCustomer(to, amount)
+                // if customer does exist, change their balance
+            } else {
+                // subtract "amount" from "from"'s balance
+                changeBalance(to, amount)
+            }
 
-        // if customer doesn't exist yet, change from balance and create "to" customer
-        } else if(getCustomerIndex(to) == -1) {
-            // subtract "amount" from "from"'s balnace
-            changeBalance(from, -amount)
-            // add new customer with balance of "amount"
-            addCustomer(to, amount)
+            // add to to list if hasn't been seen yet. change if they already exist
+            if(getCustomerIndex(from) == -1) {
+                // add new customer with balance of "amount"
+                addCustomer(from, -amount)
+                // if customer does exist, change their balance
+            } else {
+                // subtract "amount" from "from"'s balance
+                changeBalance(from, -amount)
+            }
         }
-
-        return true
     }
 
     /**
@@ -168,7 +161,12 @@ class Balances() {
 
         // add up everyone's balance
         for (b: Balance in balanceList) {
-            total += b.balance
+
+            if (b.balance == 0L) {
+                balanceList.remove(b)
+            } else {
+                total += b.balance
+            }
         }
 
         // return false if total balance for this block does not match total at genesis

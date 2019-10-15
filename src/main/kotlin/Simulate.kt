@@ -4,29 +4,13 @@ fun main() {
 
     // generate chain
     val chain = Chain()
-    val customers = arrayOf("Dwight", "Jim", "Stanley", "Karen", "Pam", "Angela", "Ryan", "Michael",
+    val customers = arrayOf("Jim", "Stanley", "Karen", "Pam", "Angela", "Ryan", "Michael",
         "Creed", "Meredith", "Kevin", "Oscar", "Kelley", "Erin")
 
-    // simulate blocks being added (between 3 and 10)
-    val blocksToGenerate = Random.nextInt(3, 10)
-    var transactionsToGenerate: Int
-
-    for (i in 0 until blocksToGenerate) {
-
-        // simulate transactions being added (between 3 and 15)
-        transactionsToGenerate = Random.nextInt(3, 15)
-        for (j in 0 until transactionsToGenerate) {
-            chain.addTransaction(generateTransaction(chain, customers))
-            chain.addTransaction(generateTransaction(chain, customers))
-            chain.addTransaction(generateTransaction(chain, customers))
-            chain.addTransaction(generateTransaction(chain, customers))
-            chain.addTransaction(generateTransaction(chain, customers))
-        }
-
-        // add new block
-        chain.beginCommit()
-        // commit new block
-        chain.commitBlock()
+    // start generating transactions to place on block
+    val transactionsToGenerate = Random.nextInt(17, 20)
+    for (i in 0 until transactionsToGenerate) {
+        chain.addTransaction(generateTransaction(chain, customers))
     }
 
     // print chain with new transaction

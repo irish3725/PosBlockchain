@@ -34,8 +34,9 @@ class Chain {
             return
         }
 
-        // for now, just add a new block
+        // for now, just add a new block and commit since we don't have a way to sign
         appendBlock()
+        commitBlock()
     }
 
     /**
@@ -156,14 +157,24 @@ class Chain {
      * Add transaction to last block in chain
      */
     fun addTransaction(transaction: Transaction) {
-        blocks[lastIndex].transactions.add(transaction)
+        blocks[lastIndex].addTransaction(transaction)
+
+        // if we have committed the last black and we reach at least 15 transactions, begin committing this block
+        if ( commitIndex == lastIndex - 1 && blocks[lastIndex].transactions.size >= 15) {
+            beginCommit()
+        }
     }
 
     /**
      * Add transaction to last block in chain
      */
     fun addTransaction(from: String, to: String, amount: Long, note: String) {
-        blocks[lastIndex].transactions.add(Transaction(from, to, amount, note))
+        blocks[lastIndex].addTransaction(Transaction(from, to, amount, note))
+
+        // if we have committed the last black and we reach at least 15 transactions, begin committing this block
+        if ( commitIndex == lastIndex - 1 && blocks[lastIndex].transactions.size >= 15) {
+            beginCommit()
+        }
     }
 
     /**

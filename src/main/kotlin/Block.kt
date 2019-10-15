@@ -1,4 +1,5 @@
 import java.security.MessageDigest
+import kotlin.math.max
 
 /**
  * Block is a single component in the blockchain. Block structure:
@@ -17,6 +18,7 @@ class Block(var prevHash: ByteArray, val prevSeq: Int) {
     var seq: Int = prevSeq + 1
     var transactions: ArrayList<Transaction> = arrayListOf<Transaction>()
     var signatures: ArrayList<Signature> = arrayListOf<Signature>()
+    var transactionCount = 0
 
     /**
      * Init handles the genesis block
@@ -24,7 +26,7 @@ class Block(var prevHash: ByteArray, val prevSeq: Int) {
     init {
         if(prevSeq == -1) {
             // generate initial hash
-            transactions.add(Transaction("genesis", "Dwight", 100000000000, "Genesis block. " +
+            this.addTransaction(Transaction("genesis", "Dwight", 100000000000, "Genesis block. " +
                     "Dwight is the Schrutebuck administrator."))
         }
     }
@@ -45,6 +47,7 @@ class Block(var prevHash: ByteArray, val prevSeq: Int) {
     fun printBlock() {
         println("Sequence: $seq\n" +
                 "Previous Hash: ${getHashHex(prevHash)}\n" +
+                "Transaction Count: $transactionCount\n" +
                 "Transactions:")
         for (t: Transaction in transactions) {
             print("\t")
@@ -82,5 +85,59 @@ class Block(var prevHash: ByteArray, val prevSeq: Int) {
             hex.append(String.format("%2X", b).replace(" ", "0"))
         }
         return hex.toString()
+    }
+
+    /**
+     * Adds transaction to block
+     */
+    fun addTransaction(transaction: Transaction) {
+
+        val insertIndex = findInsert(transaction)
+
+        transactions.add(insertIndex, transaction)
+        transactionCount++
+    }
+
+    /**
+     * returns index to insert new transaction
+     */
+    fun findInsert(newTransaction: Transaction): Int {
+
+        // if the list is empty return first position
+        if (transactions.size == 0) return 0
+
+        var start = 0
+        var end = transactions.size - 1
+        //var checkIndex = (start + end) / 2
+        var checkIndex: Int
+
+        while (end - start > 1) {
+
+            checkIndex = (start + end) / 2
+
+            // if newTransaction comes before checked transaction
+            if (newTransaction.compareTo(transactions[checkIndex]) < 0) {
+
+                // set end to checkIndex
+                end = checkIndex
+            // if newTransaction comes after checked transaction
+            } else if (newTransaction.compareTo(transactions[checkIndex]) > 0) {
+
+                // set start to checkIndex
+                start = checkIndex
+                // if the transactions are exactly the same, return the index of the matching transaction
+            } else {return checkIndex}
+        }
+
+        // if less than or equal to start, return start position
+        if (newTransaction.compareTo(transactions[start]) <= 0) {
+            return start
+
+        // if less than or equal to end, return end position
+        } else if (newTransaction.compareTo(transactions[end]) <= 0) {
+            return end
+
+        // otherwise return position to the left of end
+        } else { return end + 1 }
     }
 }

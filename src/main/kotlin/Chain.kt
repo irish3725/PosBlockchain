@@ -100,15 +100,6 @@ class Chain {
     }
 
     /**
-     * Add transaction to list of transactions.
-     *
-     * TODO: addTransaction()
-     */
-    fun addTransaction() {
-
-    }
-
-    /**
      * Sign block.
      *
      * TODO: signBlock()

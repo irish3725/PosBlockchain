@@ -8,9 +8,9 @@ fun main() {
         "Creed", "Meredith", "Kevin", "Oscar", "Kelley", "Erin")
 
     // start generating transactions to place on block
-    val transactionsToGenerate = Random.nextInt(17, 20)
+    //val transactionsToGenerate = Random.nextInt(17, 20)
+    val transactionsToGenerate = 10000
     for (i in 0 until transactionsToGenerate) {
-        chain.blocks[chain.lastIndex].printBlock()
         chain.addTransaction(generateTransaction(chain, customers))
     }
 
@@ -32,7 +32,6 @@ fun generateTransaction(chain: Chain, customers: Array<String>): Transaction {
     val fromIndex = Random.nextInt(0, customersWithBalance.size)
     val from = customersWithBalance[fromIndex]
     // get amount customer will be giving
-    println("$from: ${balances.getBalance(from)}")
     val amount = Random.nextLong(minOf(balances.getBalance(from), 5000))
 
     // get customer that will be receiving
@@ -43,8 +42,6 @@ fun generateTransaction(chain: Chain, customers: Array<String>): Transaction {
     }
 
     val transaction = Transaction(from, to, amount, "$from gave $to ${String.format("%,d", amount)} Shrutebucks.")
-    chain.getBalances().printBalances()
-    transaction.printTransaction()
     return transaction
 
 }

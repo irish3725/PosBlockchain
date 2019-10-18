@@ -7,18 +7,19 @@ fun main() {
     val customers = arrayOf("Jim", "Stanley", "Karen", "Pam", "Angela", "Ryan", "Michael",
         "Creed", "Meredith", "Kevin", "Oscar", "Kelley", "Erin")
 
+    val stakeholder = Stakeholder(customers[0])
     // start generating transactions to place on block
     //val transactionsToGenerate = Random.nextInt(17, 20)
-    val transactionsToGenerate = 10000
-    for (i in 0 until transactionsToGenerate) {
-        chain.addTransaction(generateTransaction(chain, customers))
-    }
+//    val transactionsToGenerate = 10000
+//    for (i in 0 until transactionsToGenerate) {
+//        chain.addTransaction(generateTransaction(chain, customers))
+//    }
 
     // print chain with new transaction
-    chain.printChain(0, chain.lastIndex)
+//    chain.printChain(0, chain.lastIndex)
 
     // print balances
-    chain.getBalances().printBalances()
+//    chain.getBalances().printBalances()
 
 }
 
